@@ -7,15 +7,15 @@ const UserButton = () => {
     // 临时状态
     const currentUser = true
     // 创建引用，用于判断点击是否在下拉菜单或按钮内部
-    const userButtonRef = useRef(null)
+    const userButtonContainerRef = useRef(null)  // 改为容器的引用
     const userOptionsRef = useRef(null)
 
     // 添加全局点击事件监听
     useEffect(()=>{
         const handleClickOutside = (e) => {
             // 如果菜单是打开的，并且点击目标不在菜单或按钮内部，则关闭菜单
-            if(open && userButtonRef.current && userOptionsRef.current) {
-                if(!userButtonRef.current.contains(e.target) && 
+            if(open && userButtonContainerRef.current && userOptionsRef.current) {
+                if(!userButtonContainerRef.current.contains(e.target) && 
                 !userOptionsRef.current.contains(e.target)) 
                 {
                     setOpen(false)
@@ -32,14 +32,13 @@ const UserButton = () => {
 
 
     return currentUser ? (
-        <div className='userButton'>
-            <Image path="/general/noAvatar.png" alt=""  ref={userButtonRef} />
+        <div className='userButton' ref={userButtonContainerRef}>  
+            <Image path="/general/noAvatar.png" alt="" />
             <Image
              onClick={() => setOpen((prev) => !prev)} 
              path="/general/arrow.svg"
              alt="" 
              className='arrow'
-             ref={userButtonRef}
              />
              {/* 下拉菜单 */}
              { open && (
