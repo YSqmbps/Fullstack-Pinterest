@@ -1,0 +1,38 @@
+.leftBar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 72px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    padding: 16px 0;
+    border-right: 1.5px solid #e9e9e9;
+}
+
+.menuIcons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.menuIcon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menuIcon:hover {
+    background-color: #e9e9e9;
+    border-radius: 50%;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+}
+

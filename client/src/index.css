@@ -1,0 +1,38 @@
+
+
+/* 全局样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 确保html和body占满整个视口 */
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+/* 确保root元素占满整个body */
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.app {
+  width: 100%;
+  height: 100%; /* 添加高度100%确保占满整个root */
+  display: flex;
+  gap: 16px;
+}
+
+.content {
+  background-color: rgb(255, 255, 255);
+  flex: 1;
+  margin-right: 16px;
+  /* 为内容区添加滚动功能 */
+  overflow: auto;
+  /* 可选：隐藏滚动条但保留滚动功能 */
+  -ms-overflow-style: none; 
+   scrollbar-width: none;
+}
