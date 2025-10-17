@@ -3,6 +3,7 @@ import { getPostComments } from '../controllers/comment.controller.js';
 
 const router = express.Router();    
 
-router.get("/:postId",getPostComments)
+// 添加获取评论的路由
+router.get("/:postId", getPostComments);
 
 export default router;
