@@ -2,24 +2,42 @@ import "./profilePage.css";
 import Image from "../../components/image/image";
 import { useState } from "react";
 import Gallery from "../../components/gallery/gallery";
-import Collections from "../../components/collections/collections";
+import Boards from "../../components/boards/boards";
+import { useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import apiRequest from "../../utils/apiRequest";
+
 
 
 const ProfilePage = () => {
   const [type, setType] = useState("saved");
 
+  const {username} = useParams();
+
+  const { isPending, error,data } = useQuery({
+    queryKey: ["profile", username],
+    queryFn: () => apiRequest.get(`/users/${username}`).then(res => res.data),
+  })
+  if (isPending) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!data) return <div>User not found</div>;
+
+  console.log(data);
+  
+
+
   return (
     <div className="profilePage">
       <Image
         className="profileImg"
-        path="/general/noAvatar.png"
+        src={data.img || "/general/noAvatar.png"}
         w={100}
         h={100}
         alt=""
       />
-      <h1 className="profileName">用户昵称</h1>
-      <span className="profileDesc">用户描述</span>
-      <div className="followCounts"> 100 粉丝 · 66 关注 </div>
+      <h1 className="profileName">{data.username}</h1>
+      <span className="profileDesc">{data.email}</span>
+      <div className="followCounts"> 10 粉丝 · 1000 关注 </div>
       <div className="profileInteractions">
         <Image path="/general/share.svg" alt="" />
         <div className="profileButtons">
@@ -42,7 +60,7 @@ const ProfilePage = () => {
           已保存
         </span>
       </div>
-      {type === "created" ? <Gallery /> : <Collections />} 
+      {type === "created" ? <Gallery userId={data._id} /> : <Boards userId={data._id} />} 
     </div>
   );
 };
