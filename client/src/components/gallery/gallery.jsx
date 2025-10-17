@@ -5,14 +5,20 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 const fetchPins = async ({pageParam , search, userId, boardId}) => {
-    const res = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}/pins?cursor=${
-        pageParam
-    }&search=${search || ""}
-        &userId=${userId || ""}
-        &boardId=${boardId || ""}
-        
-    `);
-    return res.data
+     
+// 创建 URL 参数对象
+  const params = new URLSearchParams();
+  params
+.append('cursor', pageParam); // 必传参数
+  if (search) params.append('search', search); // 有值才添加
+  if (userId) params.append('userId', userId); // 有值才添加
+  if (boardId) params.append('boardId', boardId); // 有值才添加
+
+  // 拼接 URL
+  const res = await axios.get(
+    `${import.meta.env.VITE_API_ENDPOINT}/pins?${params.toString()}`
+  );
+  return res.data;
 }
 
 const Gallery = ({search, userId, boardId}) => {
@@ -28,9 +34,6 @@ const Gallery = ({search, userId, boardId}) => {
 
     if (status === 'pending') return <div>Loading...</div>
 
-    console.log( userId);
-
-    console.log(data);
     
     const allPins = data?.pages.flatMap(page => page.pins) || [];
 

@@ -2,9 +2,22 @@ import './comments.css'
 import Image from '../image/image'
 import EmojiPicker from 'emoji-picker-react'
 import { useState } from 'react'
-const Comments = () => {
+import { useQuery } from '@tanstack/react-query'
+import apiRequest from '../../utils/apiRequest' 
+
+const Comments = ({id}) => {
     // emoji选择器
     const [open, setOpen] = useState(false)
+
+    const {isPending, error, data} = useQuery({
+        queryKey: ['comments'],
+        queryFn: () => apiRequest.get(`/comments${id}`).then((res) => res.data),
+    })
+     if (isPending) return <div>Loading...</div>;
+     if (error) return <div>Error: {error.message}</div>;
+     if (!data) return <div>Comments not found</div>;
+     console.log(data);
+
 
     return (
         <div className='comments'>
