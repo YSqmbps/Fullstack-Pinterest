@@ -12,12 +12,28 @@
     flex-direction: column;
     gap: 16px;
     overflow-y: auto;
-    margin-bottom: 16px;
+    max-height: 500px;
+    padding-right:8px ;
+}
+
+/* 滚动条美化（可选） */
+.commentList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.commentList::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 3px;
+}
+
+.commentList::-webkit-scrollbar-track {
+    background-color: transparent;
 }
 
 .comment {
     display: flex;
     gap: 16px;
+    padding: 8px 0;
 }
 
 .comment img {
@@ -78,4 +94,150 @@
     bottom: 50px;
     right: 0;
     z-index: 20;
+}
+
+/* 评论列表容器 */
+.commentList {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 16px;
+}
+
+/* 评论操作按钮 */
+.commentActions {
+  display: inline-flex;
+  gap: 12px;
+  margin-left: 12px;
+}
+
+.commentActions button {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.commentActions button:hover {
+  color: #000;
+}
+
+.deleteBtn {
+  color: #ff4d4f !important;
+}
+
+/* 编辑评论样式 */
+.editComment {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.editComment input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* 回复相关样式 */
+.replyBtn {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  margin-top: 4px;
+}
+
+
+.replyForm input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+
+/* 错误提示 */
+.commentError {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+/* 加载更多 */
+.loadMore {
+  text-align: center;
+  padding: 12px;
+  color: #666;
+  font-size: 14px;
+}
+
+/* 评论内容容器 */
+.commentContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;  /* 各元素之间的垂直间距 */
+  flex: 1;  /* 占满剩余宽度，避免被头像挤压 */
+}
+
+/* 用户名样式 */
+.commentUsername {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* 评论正文样式 */
+.commentText {
+  font-size: 14px;
+  color: #333;
+  margin: 0;  /* 清除默认段落边距 */
+  line-height: 1.4;  /* 优化多行文本可读性 */
+}
+
+/* 时间和回复按钮的容器（核心布局） */
+.commentMeta {
+  display: flex;  /* 横向排列 */
+  justify-content: space-between;  /* 时间左、按钮右 */
+  align-items: center;  /* 垂直居中对齐 */
+  margin-top: 2px;  /* 与评论内容保持一点距离 */
+}
+
+/* 时间样式 */
+.commentTime {
+  font-size: 12px;
+  color: #888;  /* 浅灰色，弱化视觉权重 */
+}
+
+/* 回复按钮样式 */
+.replyBtn {
+  background: none;
+  border: none;
+  color: #007bff;  /* 蓝色，突出可点击 */
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 6px;  /* 增加点击区域 */
+  margin: 0;  /* 清除默认边距 */
+  transition: color 0.2s;
+}
+
+.replyBtn:hover {
+  color: #0056b3;  /*  hover时加深颜色 */
+}
+
+/* 回复表单和嵌套回复样式保持不变（确保不影响新布局） */
+.replyForm {
+  margin: 8px 0 0 0;  /* 与元信息容器保持距离 */
+  padding-left: 0;
+}
+
+.replies {
+  margin-left: 24px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-left: 1px solid #eee;
 }

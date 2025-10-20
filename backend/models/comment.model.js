@@ -16,6 +16,12 @@ const commentSchema = new Schema( {
         ref: "User",
         required: true,
     },
+    // 回复功能，关联父评论的ID
+    parentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+        default: null,
+    }
    
 },
 {

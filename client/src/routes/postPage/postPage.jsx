@@ -1,7 +1,7 @@
 import './postPage.css'
 import Image from '../../components/image/image'
 import PostInteractions from '../../components/postInteractions/postInteractions'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useNavigate } from 'react-router'
 import Comments from '../../components/comments/comments'
 import { useQuery } from '@tanstack/react-query'
 import apiRequest from '../../utils/apiRequest'
@@ -9,6 +9,12 @@ import apiRequest from '../../utils/apiRequest'
 const PostPage = () => {
 
     const {id} = useParams()
+
+    const navigate = useNavigate()
+
+    const handleBackClick = () => {
+        navigate(-1);
+    }
     
     const { isPending,error,data } = useQuery({
         queryKey: ['pin', id],
@@ -29,6 +35,7 @@ const PostPage = () => {
                 fill="currentColor"  // 使用当前文本颜色
                 stroke="currentColor"  // 添加描边颜色
                 strokeWidth="1"  // 添加描边宽度使箭头更粗
+                onClick={handleBackClick}
             >
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
             </svg>

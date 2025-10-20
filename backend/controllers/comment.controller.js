@@ -1,21 +1,106 @@
 import Comment from "../models/comment.model.js";
-import User from "../models/user.model.js";
-import jwt from "jsonwebtoken";
 
+// 1. 获取帖子评论（支持分页 + 嵌套回复）
 export const getPostComments = async (req, res) => {
-  const { postId } = req.params;
+  try {
+    const { postId } = req.params;
+    const page = parseInt(req.query.page) || 1; // 页码
+    const limit = parseInt(req.query.limit) || 10; // 每页数量
+    const skip = (page - 1) * limit;
 
-  const comments = await Comment.find({ pin: postId })
-    .populate("user", "username img")
-    .sort({ createdAt: -1 });
+    // 先查顶级评论（parentId为null）
+    const totalComments = await Comment.countDocuments({ pin: postId, parentId: null });
+    const topLevelComments = await Comment.find({ pin: postId, parentId: null })
+      .populate("user", "username img")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-  res.status(200).json(comments);
+    // 批量查询每个顶级评论的回复
+    const commentsWithReplies = await Promise.all(
+      topLevelComments.map(async (comment) => {
+        const replies = await Comment.find({ parentId: comment._id })
+          .populate("user", "username img")
+          .sort({ createdAt: 1 });
+        return { ...comment.toObject(), replies };
+      })
+    );
+
+    res.status(200).json({
+      comments: commentsWithReplies,
+      totalPages: Math.ceil(totalComments / limit),
+      currentPage: page
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
-export const addComment = async (req, res) => {
-  const { description, pin } = req.body;
-  const userId = req.userId;
-  const comment = await Comment.create({ description, pin, user: userId });
+// 2. 添加评论/回复
+export const addComment = async (req,res) => {
+  try {
+    const { description,pin,parentId } = req.body;
+    const newComment =  new Comment({
+      description,
+      pin,
+      user: req.userId,
+      parentId
+    })
+    await newComment.save()
+    // 返回带用户信息的评论
+    const populatedComment = await Comment.findById(newComment._id)
+      .populate("user", "username img")
+      .populate("parentId");
+    res.status(201).json(populatedComment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
 
-  res.status(201).json(comment);
-};
+// 3. 编辑评论
+export const updateComment = async (req,res) => {
+   try {
+    const { id } = req.params;
+    const { description } = req.body;
+
+    // 验证评论所有权
+    const comment = await Comment.findById(id);
+    if (!comment) return res.status(404).json({ message: "评论不存在" });
+    if (comment.user.toString() !== req.userId) {
+      return res.status(403).json({ message: "没有权限编辑此评论" });
+    }
+
+    // 更新评论
+    const updatedComment = await Comment.findByIdAndUpdate(
+      id,
+      { description },
+      { new: true }
+    ).populate("user", "username img");
+
+    res.status(200).json(updatedComment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+// 4. 删除评论
+export const deleteComment = async (req,res) => {
+  try {
+    const { id } = req.params;
+
+    // 验证评论所有权
+    const comment = await Comment.findById(id);
+    if (!comment) return res.status(404).json({ message: "评论不存在" });
+    if (comment.user.toString() !== req.userId) {
+      return res.status(403).json({ message: "没有权限删除此评论" });
+    }
+
+    // 删除评论（递归删除所有子评论）
+    await Comment.deleteMany({ parentId: id }); // 删除所有子评论
+    await Comment.findByIdAndDelete(id); // 删除顶级评论
+
+    res.status(200).json({ message: "评论删除成功" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}

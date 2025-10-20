@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import Image from "../../components/image/image";
 import apiRequest from "../../utils/apiRequest";
 import useAuthStore from "../../utils/authStore";
+
 const AuthPage = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState("");
@@ -16,9 +17,10 @@ const AuthPage = () => {
     const data = Object.fromEntries(formData);
     try {
       const res = await apiRequest.post(`/users/auth/${isRegister ? "register" : "login"}`,data);
-      navigate("/");
+      const userData = res.data.detailWithPassword;
+      setCurrentUser(userData);
 
-      setCurrentUser(res.data);
+      navigate("/");
     } catch (error) {
       setError(error.response.data.message);
     }

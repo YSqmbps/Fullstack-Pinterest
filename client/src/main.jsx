@@ -10,24 +10,27 @@ import SearchPage from "./routes/searchPage/searchPage.jsx";
 import ProfilePage from "./routes/profilePage/profilePage.jsx";
 import MainLoyout from "./routes/layouts/mainLayout.jsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "./contexts/AuthContext.jsx"; // 导入 AuthProvider
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<MainLoyout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/create" element={<CreatePage />} />
-            <Route path="/pin/:id" element={<PostPage />} />
-            <Route path="/:username" element={<ProfilePage />} />
-            <Route path="/search" element={<SearchPage />} />
-          </Route>
-          <Route path="/auth" element={<AuthPage />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider> {/* 添加 AuthProvider */}
+        <BrowserRouter>
+          <Routes>
+            <Route element={<MainLoyout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/create" element={<CreatePage />} />
+              <Route path="/pin/:id" element={<PostPage />} />
+              <Route path="/:username" element={<ProfilePage />} />
+              <Route path="/search" element={<SearchPage />} />
+            </Route>
+            <Route path="/auth" element={<AuthPage />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider> {/* 结束 AuthProvider */}
     </QueryClientProvider>
   </StrictMode>
 );

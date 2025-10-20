@@ -1,11 +1,20 @@
 import express from 'express';
-import { getPostComments, addComment } from '../controllers/comment.controller.js';
-import { verifyToken } from '../middlewares/verifyToken.js';
+import { getPostComments, addComment, updateComment, deleteComment } from '../controllers/comment.controller.js';
+import  validateCommentInput  from '../middlewares/validateComment.js';
+import  verifyToken  from '../middlewares/verifyToken.js';
 
 const router = express.Router();    
 
-// 只保留一个正确的路由配置
+// 获取帖子评论（支持分页）
 router.get("/:postId", getPostComments);
-router.post("/",verifyToken,addComment)
+
+// 添加评论/回复（需登录 + 内容验证）
+router.post("/", verifyToken, validateCommentInput, addComment);
+
+// 编辑评论（需登录 + 内容验证）
+router.put("/:id", verifyToken, validateCommentInput, updateComment);
+
+// 删除评论（需登录）
+router.delete("/:id", verifyToken, deleteComment);
 
 export default router;
