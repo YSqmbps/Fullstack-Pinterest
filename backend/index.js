@@ -5,20 +5,22 @@ import pinRouter from './routes/pin.route.js';
 import commentRoutes from './routes/comment.route.js';
 import boardRouter from './routes/board.route.js';
 import connectDB from './utils/connectDB.js';
-
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 app.use(express.json());
 app.use(cors({
     origin: process.env.CLIENT_URL,
+    credentials: true,
 }))
+app.use(cookieParser());
 
 
 app.use("/users",userRouter);
 app.use("/pins",pinRouter);
 // 确保路由挂载正确
-app.use("/api/comments", commentRoutes);
+app.use("/comments", commentRoutes);
 app.use("/boards",boardRouter);
 
 app.listen(3000, () => {

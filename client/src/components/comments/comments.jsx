@@ -1,15 +1,10 @@
 import './comments.css'
-import Image from '../image/image'
-import EmojiPicker from 'emoji-picker-react'
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import apiRequest from '../../utils/apiRequest' 
 import Comment from './comment'
+import CommentForm from './commentForm'
 
 const Comments = ({id}) => {
-    // emoji选择器
-    const [open, setOpen] = useState(false)
-
     const {isPending, error, data} = useQuery({
         queryKey: ['comments',id],
         queryFn: () => apiRequest.get(`/comments/${id}`).then((res) => res.data),
@@ -29,18 +24,7 @@ const Comments = ({id}) => {
              {data.map((comment) => (
                 <Comment key={comment._id} comment={comment} />
              ))}
-
-            <form className="commentForm">
-                <input type="text" placeholder="添加一条评论吧" />
-                <div className="emoji">
-                    <div onClick={ () => setOpen(!open)}>😀</div>
-                    { open && (
-                        <div className="emojiPicker">
-                        <EmojiPicker />
-                    </div>
-                    )}
-                </div>
-            </form>
+             <CommentForm pinId={id} />
         </div>
     )
 }

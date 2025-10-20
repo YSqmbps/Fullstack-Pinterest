@@ -1,9 +1,11 @@
 import express from 'express';
-import { getPostComments } from '../controllers/comment.controller.js';
+import { getPostComments, addComment } from '../controllers/comment.controller.js';
+import { verifyToken } from '../middlewares/verifyToken.js';
 
 const router = express.Router();    
 
-// 添加获取评论的路由
+// 只保留一个正确的路由配置
 router.get("/:postId", getPostComments);
+router.post("/",verifyToken,addComment)
 
 export default router;

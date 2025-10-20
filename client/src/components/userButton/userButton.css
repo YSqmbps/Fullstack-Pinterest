@@ -37,11 +37,25 @@
     cursor: pointer;
     padding: 8px;
     border-radius: 8px;
+    text-decoration: none;  /* 移除下划线 */
+    color: inherit;         /* 继承颜色 */
+    display: block;         /* 确保链接占据整个区域 */
 }
 
 .userOption:hover {
     background-color: #f1f1f1;
     color: gray;
+    text-decoration: none;  /* 确保悬停时也没有下划线 */
+}
+
+/* 专门针对链接的额外样式 */
+.userOptions a {
+    text-decoration: none;  /* 移除下划线 */
+    color: inherit;         /* 继承颜色 */
+}
+
+.userOptions a:hover {
+    text-decoration: none;  /* 确保悬停时也没有下划线 */
 }
 
 .loginLink {
