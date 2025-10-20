@@ -57,43 +57,15 @@ export const addComment = async (req,res) => {
   }
 }
 
-// 3. 编辑评论
-export const updateComment = async (req,res) => {
-   try {
-    const { id } = req.params;
-    const { description } = req.body;
-
-    // 验证评论所有权
-    const comment = await Comment.findById(id);
-    if (!comment) return res.status(404).json({ message: "评论不存在" });
-    if (comment.user.toString() !== req.userId) {
-      return res.status(403).json({ message: "没有权限编辑此评论" });
-    }
-
-    // 更新评论
-    const updatedComment = await Comment.findByIdAndUpdate(
-      id,
-      { description },
-      { new: true }
-    ).populate("user", "username img");
-
-    res.status(200).json(updatedComment);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-}
 
 // 4. 删除评论
 export const deleteComment = async (req,res) => {
   try {
     const { id } = req.params;
 
-    // 验证评论所有权
+    // 验证评论是否存在
     const comment = await Comment.findById(id);
     if (!comment) return res.status(404).json({ message: "评论不存在" });
-    if (comment.user.toString() !== req.userId) {
-      return res.status(403).json({ message: "没有权限删除此评论" });
-    }
 
     // 删除评论（递归删除所有子评论）
     await Comment.deleteMany({ parentId: id }); // 删除所有子评论

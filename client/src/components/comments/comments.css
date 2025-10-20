@@ -1,3 +1,4 @@
+/* 评论容器样式 */
 .comments {
     flex: 1;
     display: flex;
@@ -7,16 +8,18 @@
     position: relative;
 }
 
+/* 评论列表容器 */
 .commentList {
     display: flex;
     flex-direction: column;
     gap: 16px;
     overflow-y: auto;
-    max-height: 500px;
-    padding-right:8px ;
+    max-height: 400px;
+    padding-right: 8px;
+    margin-bottom: 16px;
 }
 
-/* 滚动条美化（可选） */
+/* 滚动条美化 */
 .commentList::-webkit-scrollbar {
     width: 6px;
 }
@@ -28,6 +31,14 @@
 
 .commentList::-webkit-scrollbar-track {
     background-color: transparent;
+}
+
+/* 加载更多 */
+.loadMore {
+    text-align: center;
+    padding: 12px;
+    color: #666;
+    font-size: 14px;
 }
 
 .comment {
@@ -43,22 +54,29 @@
     object-fit: cover;
 }
 
+/* 评论内容容器 - 合并后的样式 */
 .commentContent {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
+    flex: 1;
 }
 
+/* 用户名样式 - 合并后的样式 */
 .commentUsername {
     font-weight: 500;
     font-size: 14px;
 }
 
+/* 评论正文样式 - 合并后的样式 */
 .commentText {
     font-size: 14px;
     color: #333;
+    margin: 0;
+    line-height: 1.4;
 }
 
+/* 时间样式 - 合并后的样式 */
 .commentTime {
     font-size: 12px;
     color: #888;
@@ -71,17 +89,40 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    position: sticky; /* 使用sticky定位 */
-    bottom: 0; /* 固定在底部 */
-    z-index: 10; /* 确保在最上层 */
-    margin-top: auto; /* 自动推到容器底部 */
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    margin-top: auto;
 }
+
 .commentForm input {
     flex: 1;
     border: none;
     background: transparent;
     outline: none;
     font-size: 16px;
+}
+
+.commentForm button {
+    background-color: #e60023;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-width: 60px;
+}
+
+.commentForm button:hover {
+    background-color: #ad081b;
+}
+
+.commentForm button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 .emoji {
     font-size: 20px;
@@ -96,148 +137,219 @@
     z-index: 20;
 }
 
-/* 评论列表容器 */
-.commentList {
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 8px;
-  margin-bottom: 16px;
-}
-
 /* 评论操作按钮 */
 .commentActions {
-  display: inline-flex;
-  gap: 12px;
-  margin-left: 12px;
+    display: inline-flex;
+    gap: 12px;
+    margin-left: 12px;
 }
 
 .commentActions button {
-  background: none;
-  border: none;
-  color: #666;
-  cursor: pointer;
-  font-size: 12px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 12px;
 }
 
 .commentActions button:hover {
-  color: #000;
+    color: #000;
 }
 
-.deleteBtn {
-  color: #ff4d4f !important;
+.deleteButton {
+    color: #ff4d4f !important;
 }
 
 /* 编辑评论样式 */
 .editComment {
-  display: flex;
-  gap: 8px;
-  margin: 8px 0;
+    display: flex;
+    gap: 8px;
+    margin: 8px 0;
 }
 
 .editComment input {
-  flex: 1;
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-/* 回复相关样式 */
+/* 回复按钮样式 - 合并后的样式 */
 .replyBtn {
-  background: none;
-  border: none;
-  color: #007bff;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 0;
-  margin-top: 4px;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 6px;
+    margin: 0;
+    transition: color 0.2s;
 }
 
+.replyBtn:hover {
+    color: #0056b3;
+}
 
 .replyForm input {
-  flex: 1;
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
-
 
 /* 错误提示 */
 .commentError {
-  color: #ff4d4f;
-  font-size: 12px;
-  margin-top: 4px;
-  min-height: 16px;
+    color: #ff4d4f;
+    font-size: 12px;
+    margin-top: 4px;
+    min-height: 16px;
 }
 
 /* 加载更多 */
 .loadMore {
-  text-align: center;
-  padding: 12px;
-  color: #666;
-  font-size: 14px;
-}
-
-/* 评论内容容器 */
-.commentContent {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;  /* 各元素之间的垂直间距 */
-  flex: 1;  /* 占满剩余宽度，避免被头像挤压 */
-}
-
-/* 用户名样式 */
-.commentUsername {
-  font-weight: 500;
-  font-size: 14px;
-}
-
-/* 评论正文样式 */
-.commentText {
-  font-size: 14px;
-  color: #333;
-  margin: 0;  /* 清除默认段落边距 */
-  line-height: 1.4;  /* 优化多行文本可读性 */
+    text-align: center;
+    padding: 12px;
+    color: #666;
+    font-size: 14px;
 }
 
 /* 时间和回复按钮的容器（核心布局） */
 .commentMeta {
-  display: flex;  /* 横向排列 */
-  justify-content: space-between;  /* 时间左、按钮右 */
-  align-items: center;  /* 垂直居中对齐 */
-  margin-top: 2px;  /* 与评论内容保持一点距离 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
 }
 
-/* 时间样式 */
-.commentTime {
-  font-size: 12px;
-  color: #888;  /* 浅灰色，弱化视觉权重 */
+/* 评论操作按钮容器 */
+.commentActions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 /* 回复按钮样式 */
 .replyBtn {
-  background: none;
-  border: none;
-  color: #007bff;  /* 蓝色，突出可点击 */
-  cursor: pointer;
-  font-size: 12px;
-  padding: 2px 6px;  /* 增加点击区域 */
-  margin: 0;  /* 清除默认边距 */
-  transition: color 0.2s;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 6px;
+    margin: 0;
+    transition: color 0.2s;
 }
 
 .replyBtn:hover {
-  color: #0056b3;  /*  hover时加深颜色 */
+    color: #0056b3;
 }
 
-/* 回复表单和嵌套回复样式保持不变（确保不影响新布局） */
+/* 删除按钮样式 */
+.deleteButton {
+    background: none;
+    border: none;
+    color: #ff4d4f;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 6px;
+    margin: 0;
+    transition: color 0.2s;
+}
+
+.deleteButton:hover {
+    color: #d9363e;
+}
+
+.deleteButton:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* 删除确认弹窗 */
+.deleteConfirmModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.deleteConfirmContent {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 300px;
+    width: 90%;
+    text-align: center;
+}
+
+.deleteConfirmContent p {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.deleteConfirmActions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.confirmButton {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s;
+}
+
+.confirmButton:hover {
+    background-color: #d9363e;
+}
+
+.confirmButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+    background-color: #e0e0e0;
+}
+
+.cancelButton:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+/* 回复表单和嵌套回复样式 */
 .replyForm {
-  margin: 8px 0 0 0;  /* 与元信息容器保持距离 */
-  padding-left: 0;
+    margin: 8px 0 0 0;
+    padding-left: 0;
 }
 
 .replies {
-  margin-left: 24px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-left: 1px solid #eee;
+    margin-left: 24px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-left: 1px solid #eee;
 }

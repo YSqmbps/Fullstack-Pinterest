@@ -1,4 +1,4 @@
-import "./comments.css";
+import "./commentForm.css";
 import { useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import apiRequest from "../../utils/apiRequest.js";
