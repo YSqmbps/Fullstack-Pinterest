@@ -5,36 +5,39 @@ import apiRequest from "../../utils/apiRequest";
 import { useNavigate } from "react-router";
 import useAuthStore from "../../utils/authStore";
 import { Link } from "react-router";
+
 const UserButton = () => {
-  // 下拉菜单状态
   const [open, setOpen] = useState(false);
-  // 临时状态
   const { currentUser, removeCurrentUser } = useAuthStore();
-  console.log(currentUser);
-  
-  
-  // 创建引用，用于判断点击是否在下拉菜单或按钮内部
-  const userButtonContainerRef = useRef(null); // 改为容器的引用
+  const userButtonContainerRef = useRef(null);
   const userOptionsRef = useRef(null);
-  // 导航钩子
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      const res = await apiRequest.post("/users/auth/logout", {});
-      if (res.status === 200) {
-        removeCurrentUser();
-        navigate("/auth");
-      }
+      // 先清除本地状态
+      removeCurrentUser();
+      
+      // 然后调用后端退出API
+      await apiRequest.post("/users/auth/logout", {});
+      
+      // 确保状态完全清除
+      localStorage.removeItem('auth-storage');
+      
+      // 导航到登录页面
+      navigate("/auth");
+      setOpen(false);
     } catch (error) {
       console.error("退出登录失败:", error);
+      // 即使后端失败，也要清除本地状态
+      removeCurrentUser();
+      localStorage.removeItem('auth-storage');
+      navigate("/auth");
     }
   };
 
-  // 添加全局点击事件监听
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // 如果菜单是打开的，并且点击目标不在菜单或按钮内部，则关闭菜单
       if (open && userButtonContainerRef.current && userOptionsRef.current) {
         if (
           !userButtonContainerRef.current.contains(e.target) &&
@@ -44,24 +47,25 @@ const UserButton = () => {
         }
       }
     };
-    // 给文档添加点击事件监听
+    
     document.addEventListener("click", handleClickOutside);
-    // 组件卸载时移除事件监听
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [open]);
 
+  // 调试信息
+  console.log('当前用户状态:', currentUser);
+
   return currentUser ? (
     <div className="userButton" ref={userButtonContainerRef}>
-      <Image path = {currentUser.img || "/general/noAvatar.png"} alt="" />
+      <Image path={currentUser.img || "/general/noAvatar.png"} alt="" />
       <Image
         onClick={() => setOpen((prev) => !prev)}
         path="/general/arrow.svg"
         alt=""
         className="arrow"
       />
-      {/* 下拉菜单 */}
       {open && (
         <div className="userOptions" ref={userOptionsRef}>
           <Link to={`/profile/${currentUser.username}`} className="userOption">个人简介</Link>

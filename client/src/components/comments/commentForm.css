@@ -21,7 +21,7 @@
 }
 
 .commentForm button {
-    background-color: #e60023;
+    background-color: #ffffff;
     color: white;
     border: none;
     border-radius: 24px;
@@ -49,11 +49,13 @@
     position: relative;
 }
 
+/* 表情选择器容器 */
 .emojiPicker {
-    position: absolute;
-    bottom: 50px;
-    right: 0;
-    z-index: 20;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  z-index: 9999 !important;
+  overflow: visible !important;
 }
 
 /* 错误提示 */
@@ -62,4 +64,92 @@
     font-size: 12px;
     margin-top: 4px;
     min-height: 16px;
+}
+/* 表情选择器容器 */
+.emojiPicker {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  z-index: 9999 !important;
+  overflow: visible !important;
+}
+
+/* 核心：强制重置表情选择器内部所有元素的样式 */
+.emoji-picker-react,
+.emoji-picker-react * {
+  /* 清除所有继承的样式（颜色、背景、边框等） */
+  all: initial !important;
+  /* 恢复基础盒模型（避免布局错乱） */
+  box-sizing: border-box !important;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* 重新构建表情选择器根样式 */
+.emoji-picker-react {
+  display: block !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  width: 350px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 重新构建分类栏（如"笑脸与人"标签） */
+.emoji-picker-react .category-nav {
+  display: flex !important;
+  gap: 8px !important;
+  padding: 8px 0 !important;
+  margin-bottom: 12px !important;
+  border-bottom: 1px solid #f1f1f1 !important;
+}
+
+.emoji-picker-react .category-nav button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  cursor: pointer !important;
+  color: #666 !important;
+}
+
+/* 重新构建表情网格容器 */
+.emoji-picker-react .emoji-grid {
+  display: grid !important;
+  grid-template-columns: repeat(8, 1fr) !important;
+  gap: 4px !important;
+  padding: 8px !important;
+}
+
+/* 重新构建单个表情项 */
+.emoji-picker-react .emoji-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  cursor: pointer !important;
+  background: transparent !important;
+}
+
+.emoji-picker-react .emoji-item:hover {
+  background: #f1f1f1 !important;
+  border-radius: 6px !important;
+}
+
+/* 修复表情图标（SVG） */
+.emoji-picker-react .emoji-item svg {
+  width: 24px !important;
+  height: 24px !important;
+  fill: #333 !important; /* 表情颜色 */
+}
+
+/* 修复表情分类标题（如"Smileys & People"） */
+.emoji-picker-react .emoji-category-label {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin: 8px 0 !important;
+  padding-left: 8px !important;
 }

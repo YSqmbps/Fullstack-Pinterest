@@ -1,5 +1,5 @@
 import "./authPage.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Image from "../../components/image/image";
 import apiRequest from "../../utils/apiRequest";
@@ -9,24 +9,38 @@ const AuthPage = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { setCurrentUser } = useAuthStore();
+  const { setCurrentUser, currentUser } = useAuthStore();
+
+  // 如果已经登录，直接跳转到首页
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/");
+    }
+  }, [currentUser, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
+    
     try {
-      const res = await apiRequest.post(`/users/auth/${isRegister ? "register" : "login"}`,data);
-      const userData = res.data.detailWithPassword;
+      const res = await apiRequest.post(`/users/auth/${isRegister ? "register" : "login"}`, data);
+      
+      // 修复：后端返回的是detailWithoutPassword
+      const userData = res.data.detailWithoutPassword;
+      
+      if (!userData) {
+        throw new Error('登录响应数据格式错误');
+      }
+      
+      // 设置用户状态并导航到首页
       setCurrentUser(userData);
-
       navigate("/");
+      
     } catch (error) {
-      setError(error.response.data.message);
+      setError(error.response?.data?.message || error.message || '登录失败');
     }
-  }
-
-
+  };
 
   return (
     <div className="authPage">

@@ -1,16 +1,19 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext } from "react";
 import useAuthStore from "../utils/authStore";
-// 添加默认值
+
 const AuthContext = createContext({
   user: null,
 });
 
 export const AuthProvider = ({ children }) => {
-  // 直接从 authStore 获取当前用户（与登录逻辑同步）
-  const { currentUser } = useAuthStore();
+  const { currentUser, setCurrentUser, removeCurrentUser } = useAuthStore();
 
   return (
-    <AuthContext.Provider value={{ user: currentUser }}>
+    <AuthContext.Provider value={{ 
+      user: currentUser, 
+      setUser: setCurrentUser, 
+      removeUser: removeCurrentUser 
+    }}>
       {children}
     </AuthContext.Provider>
   );

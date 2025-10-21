@@ -6,7 +6,7 @@ import Boards from "../../components/boards/boards";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import apiRequest from "../../utils/apiRequest";
-
+import FollowButton from "./FollowButton";
 
 
 const ProfilePage = () => {
@@ -37,12 +37,12 @@ const ProfilePage = () => {
       />
       <h1 className="profileName">{data.username}</h1>
       <span className="profileDesc">{data.email}</span>
-      <div className="followCounts"> 10 粉丝 · 1000 关注 </div>
+      <div className="followCounts"> {data.followerCount} 粉丝 · {data.followingCount} 关注 </div>
       <div className="profileInteractions">
         <Image path="/general/share.svg" alt="" />
         <div className="profileButtons">
           <button>留言</button>
-          <button>关注</button>
+          <FollowButton isFollowing={data.isFollowing} username={username} />
         </div>
         <Image path="/general/more.svg" alt="" />
       </div>

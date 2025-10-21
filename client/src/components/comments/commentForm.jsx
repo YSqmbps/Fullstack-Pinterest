@@ -75,7 +75,12 @@ const CommentForm = ({ pinId }) => {
         <div onClick={() => setOpen(!open)}>😀</div>
         {open && (
           <div className="emojiPicker">
-            <EmojiPicker onEmojiClick={handleEmojiClick} />
+            <EmojiPicker 
+              onEmojiClick={handleEmojiClick} 
+              theme="light" // 添加主题设置
+              width={350} // 设置宽度
+              height={400} // 设置高度
+            />
           </div>
         )}
       </div>
