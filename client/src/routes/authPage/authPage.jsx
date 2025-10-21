@@ -1,6 +1,6 @@
 import "./authPage.css";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate,useLocation } from "react-router";
 import Image from "../../components/image/image";
 import apiRequest from "../../utils/apiRequest";
 import useAuthStore from "../../utils/authStore";
@@ -9,14 +9,17 @@ const AuthPage = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const { setCurrentUser, currentUser } = useAuthStore();
 
-  // 如果已经登录，直接跳转到首页
+   // 从路由状态中获取重定向URL，如果没有则默认为首页
+  const redirectUrl = location.state?.redirectUrl || '/';
+  // 如果已经登录，直接跳转到重定向URL
   useEffect(() => {
     if (currentUser) {
-      navigate("/");
+      navigate(redirectUrl);
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, navigate, redirectUrl]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +29,6 @@ const AuthPage = () => {
     try {
       const res = await apiRequest.post(`/users/auth/${isRegister ? "register" : "login"}`, data);
       
-      // 修复：后端返回的是detailWithoutPassword
       const userData = res.data.detailWithoutPassword;
       
       if (!userData) {
@@ -35,7 +37,7 @@ const AuthPage = () => {
       
       // 设置用户状态并导航到首页
       setCurrentUser(userData);
-      navigate("/");
+      navigate(redirectUrl);
       
     } catch (error) {
       setError(error.response?.data?.message || error.message || '登录失败');
