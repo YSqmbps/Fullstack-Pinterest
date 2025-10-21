@@ -3,6 +3,7 @@
     align-items: center;
     gap: 16px;
     position: relative;
+    cursor: pointer; /* 增加光标样式，提示可点击 */
 }
 
 .userButton img {
@@ -24,7 +25,8 @@
     transition: transform 0.2s ease-in-out;
 }
 
-.userButton:hover .arrow {
+/* 修改箭头旋转逻辑，使其与下拉框状态同步 */
+.userButton .arrow.open {
     transform: rotate(180deg);
 }
 
@@ -32,22 +34,22 @@
     position: absolute;
     right: 0;
     top: 120%;
-    width: 140px; /* 略微增加宽度以适应内容 */
-    padding: 12px 0; /* 调整内边距 */
-    border-radius: 12px; /* 增加圆角更现代化 */
+    width: 140px;
+    padding: 12px 0;
+    border-radius: 12px;
     background-color: white;
     z-index: 999;
     display: flex;
     flex-direction: column;
     font-size: 14px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 增强阴影效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     opacity: 0;
     visibility: hidden;
     transform: translateY(10px);
     transition: all 0.3s ease-in-out;
 }
 
-.userButton:hover .userOptions,
+/* 只保留与open状态相关的显示逻辑 */
 .userOptions.show {
     opacity: 1;
     visibility: visible;
@@ -56,7 +58,7 @@
 
 .userOption {
     cursor: pointer;
-    padding: 10px 20px; /* 增加内边距提供更好的点击区域 */
+    padding: 10px 20px;
     text-decoration: none;
     color: inherit;
     display: block;

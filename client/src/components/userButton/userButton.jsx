@@ -56,9 +56,6 @@ const UserButton = () => {
     };
   }, [open]);
 
-  // 调试信息
-  console.log('当前用户状态:', currentUser);
-
   return currentUser ? (
     <div className="userButton" ref={userButtonContainerRef}>
       <Image path={currentUser.img || "/general/noAvatar.png"} alt="" />
@@ -66,10 +63,10 @@ const UserButton = () => {
         onClick={() => setOpen((prev) => !prev)}
         path="/general/arrow.svg"
         alt=""
-        className="arrow"
+        className={`arrow ${open ? 'open' : ''}`}  // 添加open类名来控制旋转
       />
       {open && (
-        <div className="userOptions" ref={userOptionsRef}>
+        <div className="userOptions show" ref={userOptionsRef}>
           <Link to={`/profile/${currentUser.username}`} className="userOption">个人简介</Link>
           <div className="userOption">设置</div>
           <div className="userOption" onClick={handleLogout}>
