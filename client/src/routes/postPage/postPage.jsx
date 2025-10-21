@@ -12,8 +12,9 @@ const PostPage = () => {
 
     const navigate = useNavigate()
 
+    // 修改为直接跳转到首页
     const handleBackClick = () => {
-        navigate(-1);
+        navigate('/');
     }
     
     const { isPending,error,data } = useQuery({
@@ -31,7 +32,7 @@ const PostPage = () => {
                 height="24"  // 增加尺寸
                 viewBox='0 0 24 24'
                 width="24"   // 增加尺寸
-                style={{ cursor: 'pointer'}}
+                style={{ cursor: 'pointer'}} 
                 fill="currentColor"  // 使用当前文本颜色
                 stroke="currentColor"  // 添加描边颜色
                 strokeWidth="1"  // 添加描边宽度使箭头更粗

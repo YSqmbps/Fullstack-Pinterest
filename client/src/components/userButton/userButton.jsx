@@ -2,7 +2,7 @@ import "./userButton.css";
 import { useState, useEffect, useRef } from "react";
 import Image from "../image/image";
 import apiRequest from "../../utils/apiRequest";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import useAuthStore from "../../utils/authStore";
 import { Link } from "react-router";
 
@@ -12,6 +12,7 @@ const UserButton = () => {
   const userButtonContainerRef = useRef(null);
   const userOptionsRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -24,15 +25,16 @@ const UserButton = () => {
       // 确保状态完全清除
       localStorage.removeItem('auth-storage');
       
-      // 导航到登录页面
-      navigate("/auth");
+      // 修改为跳转到首页，而不是登录页
+      navigate("/");
       setOpen(false);
     } catch (error) {
       console.error("退出登录失败:", error);
       // 即使后端失败，也要清除本地状态
       removeCurrentUser();
       localStorage.removeItem('auth-storage');
-      navigate("/auth");
+      // 错误情况下也跳转到首页
+      navigate("/");
     }
   };
 
@@ -77,9 +79,12 @@ const UserButton = () => {
       )}
     </div>
   ) : (
-    <Link to="/auth" className="loginLink">
+    <button 
+      className="loginLink"
+      onClick={() => navigate('/auth', { state: { redirectUrl: location.pathname } })}
+    >
       登录 / 注册
-    </Link>
+    </button>
   );
 };
 

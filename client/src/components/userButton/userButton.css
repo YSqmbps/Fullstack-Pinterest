@@ -2,76 +2,142 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    position: relative;;
+    position: relative;
 }
 
 .userButton img {
     width: 36px;
     height: 36px;
-    border-radius: 100%; /* 修复为正确的属性 */
+    border-radius: 100%;
     object-fit: cover;
+    transition: transform 0.2s ease-in-out;
+}
+
+.userButton img:hover {
+    transform: scale(1.05);
 }
 
 .userButton .arrow {
     cursor: pointer;
     width: 16px;
     height: 16px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.userButton:hover .arrow {
+    transform: rotate(180deg);
 }
 
 .userOptions {
     position: absolute;
-    right:0;
+    right: 0;
     top: 120%;
-    width: 110px;
-    padding: 16px;
-    border-radius: 8px;
+    width: 140px; /* 略微增加宽度以适应内容 */
+    padding: 12px 0; /* 调整内边距 */
+    border-radius: 12px; /* 增加圆角更现代化 */
     background-color: white;
     z-index: 999;
     display: flex;
     flex-direction: column;
     font-size: 14px;
-    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 增强阴影效果 */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease-in-out;
+}
+
+.userButton:hover .userOptions,
+.userOptions.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .userOption {
     cursor: pointer;
-    padding: 8px;
-    border-radius: 8px;
-    text-decoration: none;  /* 移除下划线 */
-    color: inherit;         /* 继承颜色 */
-    display: block;         /* 确保链接占据整个区域 */
+    padding: 10px 20px; /* 增加内边距提供更好的点击区域 */
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
 }
 
 .userOption:hover {
     background-color: #f1f1f1;
-    color: gray;
-    text-decoration: none;  /* 确保悬停时也没有下划线 */
+    color: #e50914;
 }
 
 /* 专门针对链接的额外样式 */
 .userOptions a {
-    text-decoration: none;  /* 移除下划线 */
-    color: inherit;         /* 继承颜色 */
+    text-decoration: none;
+    color: inherit;
 }
 
 .userOptions a:hover {
-    text-decoration: none;  /* 确保悬停时也没有下划线 */
+    text-decoration: none;
 }
 
 .loginLink {
     font-size: 18px;
-    padding: 16px;
+    padding: 10px 24px;
     border-radius: 32px;
-    color: #000000d9;
-    text-decoration: none
+    color: #e50914;
+    text-decoration: none;
+    border: 1px solid #e50914;
+    background: none;
+    cursor: pointer;
+    display: inline-block;
+    font: inherit;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.loginLink::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.1), transparent);
+    transition: left 0.5s ease-in-out;
+}
+
+.loginLink:hover::before {
+    left: 100%;
 }
 
 .loginLink:hover {
-    background-color: #f1f1f1;
+    background-color: #e50914;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+}
+
+.loginLink:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(229, 9, 20, 0.2);
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .loginLink {
+        font-size: 16px;
+        padding: 8px 20px;
+    }
 }
 
 @media (max-width: 475px) {
     .userButton {
         display: none;
+    }
+    
+    .loginLink {
+        font-size: 14px;
+        padding: 6px 16px;
     }
 }
