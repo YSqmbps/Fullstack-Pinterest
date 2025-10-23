@@ -1,5 +1,5 @@
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt'; // 添加bcrypt导入
 import User from '../models/user.model.js';
 import Follow from '../models/follow.model.js';
 
@@ -71,6 +71,13 @@ export const getUser = async (req, res) => {
   const { username } = req.params;
 
   const user = await User.findOne({ username });
+  
+  // 添加用户不存在的检查
+  if (!user) {
+    return res.status(404).json({
+      message: "用户不存在"
+    });
+  }
 
   const { hashedPassword, ...detailWithoutPassword } = user.toObject();
 
@@ -106,6 +113,13 @@ export const getUser = async (req, res) => {
 export const followUser = async (req,res) => {
   const { username } = req.params;
   const user = await User.findOne({ username });
+
+  // 同样添加用户不存在的检查
+  if (!user) {
+    return res.status(404).json({
+      message: "用户不存在"
+    });
+  }
 
   const isFollowing = await Follow.exists({
     follower: req.userId,
