@@ -71,100 +71,110 @@ const Comment = ({ comment, pinId }) => {
 
   return (
     <div className="comment">
-      <Image src={comment.user.img || "/general/noAvatar.png"} alt="" />
-      <div className="commentContent">
-        <div className="commentHeader">
-          <span className="commentUsername">{comment.user.username}</span>
-        </div>
+        {/* 添加comment.user存在检查 */}
+        {comment.user ? (
+            <>
+                <Image src={comment.user.img || "/general/noAvatar.png"} alt="" />
+                <div className="commentContent">
+                    <div className="commentHeader">
+                        <span className="commentUsername">{comment.user.username}</span>
+                    </div>
+                    
+                    {/* 评论内容 */}
+                    <p className="commentText">{comment.description}</p>
+                    
+                    {/* 剩余评论逻辑保持不变 */}
+                    <div className="commentMeta">
+                      <span className="commentTime">{format(comment.createdAt)}</span>
+                      <div className="commentActions">
+                        <button
+                          className="replyBtn"
+                          onClick={() => setShowReplyForm(!showReplyForm)}
+                        >
+                          回复
+                        </button>
+                        {/* 删除按钮对所有登录用户显示 */}
+                        {isLoggedIn && (
+                          <button
+                            onClick={handleDeleteClick}
+                            className="deleteButton"
+                            disabled={deleteMutation.isPending}
+                          >
+                            删除
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-        {/* 评论内容 */}
-        <p className="commentText">{comment.description}</p>
+                    {/* 删除确认弹窗 */}
+                    {showDeleteConfirm && (
+                      <div className="deleteConfirmModal">
+                        <div className="deleteConfirmContent">
+                          <p>确定要删除这条评论吗？</p>
+                          <div className="deleteConfirmActions">
+                            <button 
+                              onClick={handleConfirmDelete}
+                              disabled={deleteMutation.isPending}
+                              className="confirmButton"
+                            >
+                              {deleteMutation.isPending ? "删除中..." : "确认删除"}
+                            </button>
+                            <button 
+                              onClick={handleCancelDelete}
+                              disabled={deleteMutation.isPending}
+                              className="cancelButton"
+                            >
+                              取消
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
-        {/* 时间和操作按钮的容器 */}
-        <div className="commentMeta">
-          <span className="commentTime">{format(comment.createdAt)}</span>
-          <div className="commentActions">
-            <button
-              className="replyBtn"
-              onClick={() => setShowReplyForm(!showReplyForm)}
-            >
-              回复
-            </button>
-            {/* 删除按钮对所有登录用户显示 */}
-            {isLoggedIn && (
-              <button
-                onClick={handleDeleteClick}
-                className="deleteButton"
-                disabled={deleteMutation.isPending}
-              >
-                删除
-              </button>
-            )}
-          </div>
-        </div>
+                    {/* 回复表单 */}
+                    {showReplyForm && (
+                      <div className="replyForm">
+                        <input
+                          type="text"
+                          placeholder="写下你的回复..."
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          maxLength="200"
+                        />
+                        <button
+                          onClick={handleReply}
+                          disabled={!replyText.trim() || replyMutation.isPending}
+                        >
+                          发送
+                        </button>
+                        <button
+                          onClick={handleCancelReply}
+                          disabled={replyMutation.isPending}
+                          className="replyCancelBtn"
+                        >
+                          取消
+                        </button>
+                      </div>
+                    )}
 
-        {/* 删除确认弹窗 */}
-        {showDeleteConfirm && (
-          <div className="deleteConfirmModal">
-            <div className="deleteConfirmContent">
-              <p>确定要删除这条评论吗？</p>
-              <div className="deleteConfirmActions">
-                <button 
-                  onClick={handleConfirmDelete}
-                  disabled={deleteMutation.isPending}
-                  className="confirmButton"
-                >
-                  {deleteMutation.isPending ? "删除中..." : "确认删除"}
-                </button>
-                <button 
-                  onClick={handleCancelDelete}
-                  disabled={deleteMutation.isPending}
-                  className="cancelButton"
-                >
-                  取消
-                </button>
-              </div>
+                    {/* 渲染子回复 */}
+                    {comment.replies?.length > 0 && (
+                      <div className="replies">
+                        {comment.replies.map((reply) => (
+                          <Comment key={reply._id} comment={reply} pinId={pinId} />
+                        ))}
+                      </div>
+                    )}
+                </div>
+            </>
+        ) : (
+            <div className="commentContent">
+                <p className="commentText">{comment.description}</p>
+                <span className="commentTime">{format(comment.createdAt)}</span>
             </div>
-          </div>
         )}
-
-        {/* 回复表单 */}
-        {showReplyForm && (
-          <div className="replyForm">
-            <input
-              type="text"
-              placeholder="写下你的回复..."
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              maxLength="200"
-            />
-            <button
-              onClick={handleReply}
-              disabled={!replyText.trim() || replyMutation.isPending}
-            >
-              发送
-            </button>
-            <button
-              onClick={handleCancelReply}
-              disabled={replyMutation.isPending}
-              className="replyCancelBtn"
-            >
-              取消
-            </button>
-          </div>
-        )}
-
-        {/* 渲染子回复 */}
-        {comment.replies?.length > 0 && (
-          <div className="replies">
-            {comment.replies.map((reply) => (
-              <Comment key={reply._id} comment={reply} pinId={pinId} />
-            ))}
-          </div>
-        )}
-      </div>
     </div>
-  );
+)
 };
 
 export default Comment;

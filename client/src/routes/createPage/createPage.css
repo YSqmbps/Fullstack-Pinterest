@@ -116,15 +116,22 @@
   color: gray;
 }
 .createFormItem input,
-.createFormItem textarea {
+.createFormItem textarea,
+.createFormItem select {
   font-size: 15px;
   border: 2px solid #e9e9e9;
   border-radius: 16px;
   padding: 16px;
+  /* 添加背景和外观样式确保跨浏览器一致性 */
+  background-color: white;
+  appearance: none;
+  cursor: pointer;
 }
 .createFormItem input:focus,
-.createFormItem textarea:focus {
+.createFormItem textarea:focus,
+.createFormItem select:focus {
   border: 2px solid #860115;
+  outline: none;
 }
 .createFormItem textarea {
   resize: none;

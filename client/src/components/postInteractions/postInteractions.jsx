@@ -61,7 +61,10 @@ const PostInteractions = ({ postId }) => {
         <Image path="/general/share.svg" alt="" />
         <Image path="/general/more.svg" alt="" />
       </div>
-      <button onClick={() => mutation.mutate({ id: postId, type: "save" })}>
+      <button
+        disabled={mutation.isPending}
+        onClick={() => mutation.mutate({ id: postId, type: "save" })}
+      >
         {data.isSaved ? "已保存" : "保存"}
       </button>
     </div>

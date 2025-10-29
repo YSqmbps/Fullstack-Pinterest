@@ -29,13 +29,13 @@ const PostPage = () => {
     return (
         <div className='postPage'>
             <svg 
-                height="24"  // 增加尺寸
+                height="24"
                 viewBox='0 0 24 24'
-                width="24"   // 增加尺寸
-                style={{ cursor: 'pointer'}} 
-                fill="currentColor"  // 使用当前文本颜色
-                stroke="currentColor"  // 添加描边颜色
-                strokeWidth="1"  // 添加描边宽度使箭头更粗
+                width="24"
+                style={{ cursor: 'pointer'}}
+                fill="currentColor"
+                stroke="currentColor"
+                strokeWidth="1"
                 onClick={handleBackClick}
             >
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
@@ -46,10 +46,12 @@ const PostPage = () => {
                 </div>
                 <div className='postDetails'>
                     <PostInteractions postId={id}/>
-                    <Link to={`/${data.user.username}`} className='postUser'>
-                        <Image path={data.user.img || "/general/noAvatar.png"} alt=""/>
-                        <span>{data.user.username}</span>
-                    </Link>
+                    {data.user && (
+                        <Link to={`/${data.user.username}`} className='postUser'>
+                            <Image path={data.user.img || "/general/noAvatar.png"} alt=""/>
+                            <span>{data.user.username}</span>
+                        </Link>
+                    )}
                     <Comments id={data._id} />
                 </div>
             </div>

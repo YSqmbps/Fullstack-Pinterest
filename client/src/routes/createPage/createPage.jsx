@@ -4,12 +4,21 @@ import useAuthStore from "../../utils/authStore";
 import { useNavigate } from "react-router";
 import { useEffect, useState, useRef } from "react";
 import Editor from "../../components/editor/editor";
-import  useEditorStore from "../../utils/editorStore";
+import useEditorStore from "../../utils/editorStore";
 import apiRequest from "../../utils/apiRequest";
+import { useQuery } from "@tanstack/react-query";
 const CreatePage = () => {
   const { currentUser } = useAuthStore();
   const navigate = useNavigate();
   const formRef = useRef(null);
+
+  // 新增：获取当前用户的看板列表
+  const { data: boards = [] } = useQuery({
+    queryKey: ["userBoards", currentUser?._id], // 依赖当前用户ID
+    queryFn: () =>
+      apiRequest.get(`/boards/${currentUser._id}`).then((res) => res.data),
+    enabled: !!currentUser, // 仅当用户登录后才请求
+  });
 
   const [file, setFile] = useState(null);
   const [previewImg, setPreviewImg] = useState({
@@ -26,50 +35,72 @@ const CreatePage = () => {
   }, [currentUser, navigate]);
 
   useEffect(() => {
-    if(file) {
-        const img = new Image()
-        img.src = URL.createObjectURL(file)
-        img.onload = () =>{
-            setPreviewImg({
-                url: img.src,
-                width: img.width,
-                height: img.height,
-            })
-        }
-    }
-  },[file])
-
-  const {textOptions,canvasOptions} = useEditorStore();
-
-  const handleSubmit = async () => {
-    if(isEditing) {
-      setIsEditing(false)
-    } else {
-      const formData = new FormData(formRef.current);
-      formData.append("media", file);
-      formData.append("textOptions", JSON.stringify(textOptions));
-      formData.append("canvasOptions", JSON.stringify(canvasOptions));
-      try {
-        const res = await apiRequest.post("/pins", formData,{
-          headers: {
-            "Content-Type": "multipart/form-data",
-          }
+    if (file) {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        setPreviewImg({
+          url: img.src,
+          width: img.width,
+          height: img.height,
         });
-        navigate(`/pin/${res.data._id}`);
-      } catch (error) {
-        console.log(error);
-      }
-      }
+      };
+    }
+  }, [file]);
 
-  }
+  const { textOptions, canvasOptions } = useEditorStore();
 
+  // 修改 handleSubmit 函数，添加前端验证
+  const handleSubmit = async () => {
+    if (isEditing) {
+      setIsEditing(false);
+      return;
+    }
+
+    // 前端验证逻辑
+    const titleInput = formRef.current?.title;
+    const descriptionInput = formRef.current?.description;
+
+    // 检查标题
+    if (!titleInput?.value.trim()) {
+      alert("请填写标题");
+      titleInput?.focus();
+      return;
+    }
+
+    // 检查描述
+    if (!descriptionInput?.value.trim()) {
+      alert("请填写描述");
+      descriptionInput?.focus();
+      return;
+    }
+
+    // 检查图片文件
+    if (!file) {
+      alert("请上传图片文件");
+      return;
+    }
+
+    // 验证通过，提交表单
+    const formData = new FormData(formRef.current);
+    formData.append("media", file);
+    formData.append("textOptions", JSON.stringify(textOptions));
+    formData.append("canvasOptions", JSON.stringify(canvasOptions));
+
+    try {
+      const res = await apiRequest.post("/pins", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      navigate(`/pin/${res.data._id}`);
+    } catch (error) {
+      console.log("发布失败：", error.response?.data?.message || error.message);
+    }
+  };
   return (
     <div className="createPage">
       <div className="createTop">
         <h1>{isEditing ? "编辑图片" : "创建图片"}</h1>
-        <button onClick={handleSubmit}>
-          {isEditing ? "保存" : "发布"}
-        </button>
+        <button onClick={handleSubmit}>{isEditing ? "保存" : "发布"}</button>
       </div>
 
       {isEditing ? (
@@ -111,6 +142,7 @@ const CreatePage = () => {
                 placeholder="添加一个标题"
                 name="title"
                 id="title"
+                required
               />
             </div>
             <div className="createFormItem">
@@ -121,6 +153,7 @@ const CreatePage = () => {
                 placeholder="添加一个详细的描述"
                 name="description"
                 id="description"
+                required
               />
             </div>
             <div className="createFormItem">
@@ -135,10 +168,8 @@ const CreatePage = () => {
             <div className="createFormItem">
               <label htmlFor="board">模板</label>
               <select name="board" id="board">
-                <option value="">选择一个模板</option>
-                <option value="1">模板1</option>
-                <option value="2">模板2</option>
-                <option value="3">模板3</option>
+                <option value="">不选择看板（可选）</option>
+                {/* 移除所有硬编码选项 */}
               </select>
             </div>
             {/* tags */}

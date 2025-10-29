@@ -86,8 +86,8 @@ const Options = ({ previewImg }) => {
   const handleSizeClick = (size) => {
     let newHeight;
 
-    if(size === "original"){
-      if(canvasOptions.orientation === "portrait"){
+    if (size === "original") {
+      if (canvasOptions.orientation === "portrait") {
         newHeight = (375 * previewImg.width) / previewImg.height;
       } else {
         newHeight = (375 * previewImg.height) / previewImg.width;
@@ -100,26 +100,33 @@ const Options = ({ previewImg }) => {
       size: size.name,
       height: newHeight,
       // 添加width属性，使其与size.width保持一致
-      width: size.width
+      width: size.width,
     });
   };
-  
+  const originalOrientation =
+    previewImg.width > previewImg.height ? "landscape" : "portrait";
+
   // 确保handleOrientationClick函数被正确定义并放置在合适的位置
   const handleOrientationClick = (orientation) => {
-    const newHeight = orientation === "portrait"
-      ? (375 * previewImg.width) / previewImg.height
-      : (375 * previewImg.height) / previewImg.width;
+    let newHeight;
+    if (
+      (originalOrientation === "portrait" && orientation === "portrait") ||
+      (originalOrientation === "landscape" && orientation === "landscape")
+    ) {
+      newHeight = (375 * previewImg.height) / previewImg.width;
+    } else {
+      newHeight = (375 * previewImg.width) / previewImg.height;
+    }
+
     setCanvasOptions({
       ...canvasOptions,
       orientation,
       size: "original",
       height: newHeight,
-      width: previewImg.width
+      width: previewImg.width,
     });
   };
 
-
-  
   return (
     <div className="options">
       {selectedLayer === "text" ? (
@@ -251,7 +258,6 @@ const Options = ({ previewImg }) => {
       )}
     </div>
   );
-  
 };
 
 export default Options;
