@@ -175,45 +175,42 @@ export const interactionCheck = async (req, res) => {
   });
 };
 
+// 修改interact函数，使其返回更新后的状态
 export const interact = async (req, res) => {
   const { id } = req.params;
-
   const { type } = req.body;
+  const userId = req.userId;
 
-  if (type === "like") {
-    const isLiked = await Like.findOne({
-      pin: id,
-      user: req.userId,
-    });
-
-    if (isLiked) {
-      await Like.deleteOne({
-        pin: id,
-        user: req.userId,
-      });
-    } else {
-      await Like.create({
-        pin: id,
-        user: req.userId,
-      });
+  try {
+    if (type === "like") {
+      const isLiked = await Like.findOne({ pin: id, user: userId });
+      
+      if (isLiked) {
+        await Like.deleteOne({ pin: id, user: userId });
+      } else {
+        await Like.create({ pin: id, user: userId });
+      }
+    } else if (type === "save") {
+      const isSaved = await Save.findOne({ pin: id, user: userId });
+      
+      if (isSaved) {
+        await Save.deleteOne({ pin: id, user: userId });
+      } else {
+        await Save.create({ pin: id, user: userId });
+      }
     }
-  } else if (type === "save") {
-    const isSaved = await Save.findOne({
-      pin: id,
-      user: req.userId,
-    });
 
-    if (isSaved) {
-      await Save.deleteOne({
-        pin: id,
-        user: req.userId,
-      });
-    } else {
-      await Save.create({
-        pin: id,
-        user: req.userId,
-      });
-    }
+    // 关键修改：互动后查询最新状态并返回
+    const likeCount = await Like.countDocuments({ pin: id });
+    const isLiked = await Like.findOne({ pin: id, user: userId });
+    const isSaved = await Save.findOne({ pin: id, user: userId });
+
+    return res.status(200).json({
+      likeCount,
+      isLiked: !!isLiked,
+      isSaved: !!isSaved
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
-    return res.status(200).json("互动成功");
 };

@@ -11,15 +11,18 @@ const interact = async (id, type) => {
 };
 
 const PostInteractions = ({ postId }) => {
+  const queryClient = useQueryClient();
 
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        mutationFn: ({id, type}) => interact(id, type),
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['interactionCheck', postId]});
-        }
-    });
+  const mutation = useMutation({
+    mutationFn: ({ id, type }) => interact(id, type),
+    onSuccess: (data) => {
+      // 直接更新缓存数据，而不只是使查询失效
+      queryClient.setQueryData(
+        ["interactionCheck", postId],
+        data // 使用从后端返回的最新数据
+      );
+    },
+  });
 
   const { isPending, error, data } = useQuery({
     queryKey: ["interactionCheck", postId],
@@ -29,7 +32,11 @@ const PostInteractions = ({ postId }) => {
         .then((res) => res.data),
   });
 
-  if (isPending || error) return;
+  // 优化加载状态处理
+  if (isPending) return <div>加载中...</div>;
+  if (error) return <div>操作失败，请重试</div>;
+  // 确保data存在再渲染
+  if (!data) return null;
   console.log(data);
 
   return (
@@ -41,7 +48,7 @@ const PostInteractions = ({ postId }) => {
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          onClick={() => mutation.mutate({id: postId, type: "like"})}
+          onClick={() => mutation.mutate({ id: postId, type: "like" })}
         >
           <path
             d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z"
@@ -54,7 +61,9 @@ const PostInteractions = ({ postId }) => {
         <Image path="/general/share.svg" alt="" />
         <Image path="/general/more.svg" alt="" />
       </div>
-      <button onClick={() => mutation.mutate({id: postId, type: "save"})}>{data.isSaved ? "已保存" : "保存"}</button>
+      <button onClick={() => mutation.mutate({ id: postId, type: "save" })}>
+        {data.isSaved ? "已保存" : "保存"}
+      </button>
     </div>
   );
 };
