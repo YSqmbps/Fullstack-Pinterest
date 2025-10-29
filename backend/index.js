@@ -6,6 +6,7 @@ import commentRoutes from './routes/comment.route.js';
 import boardRouter from './routes/board.route.js';
 import connectDB from './utils/connectDB.js';
 import cookieParser from 'cookie-parser';
+import fileUpload from 'express-fileupload';
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(cors({
     credentials: true,
 }))
 app.use(cookieParser());
-
+app.use(fileUpload());
 
 app.use("/users",userRouter);
 app.use("/pins",pinRouter);

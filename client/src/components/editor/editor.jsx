@@ -7,8 +7,6 @@ const Editor = ({ previewImg }) => {
   return (
     <div className="editor">
       <div className="editorTop">
-        <h1>编辑图片</h1>
-        <button>保存</button>
       </div>
         <Layers previewImg={previewImg} />
         <Workspace previewImg={previewImg} />

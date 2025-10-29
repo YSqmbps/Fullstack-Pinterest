@@ -7,12 +7,173 @@
 
 .layers {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.layers h3 {
+    font-size: 20px;
+    font-weight:bold;
+}
+
+.layers p {
+    font-size: 16px;
+    color: #808080;
+    margin-top: 4px;
+}
+
+.layer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 300;
+    font-size: 16px;
+}
+
+.layer:hover,
+.layer.selected {
+    background-color: #f0f0f0;
+}
+
+.layerImage {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .workspace {
     flex: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e9e9e9;
+    padding: 64px 0;
 }
+
+.canvas {
+    width: 375px;
+    border-radius: 32px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    position: relative;
+}
+.text {
+    position: absolute;
+    
+    z-index: 999;
+    max-width: 100%;
+    border: 1px dashed red;
+}
+
+.text input {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: inherit;
+    cursor: grab;
+    width: 100%;
+}
+
+.deleteTextButton {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    background-color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deleteTextButton:hover {
+    background-color: #f0f0f0;
+}
+
+.canvas img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
 
 .options {
     flex: 1;
+    margin-top: 32px;
+}
+
+.editingOption {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.editingOption span {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.editingOption input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.textColor {
+    position: relative;
+}
+
+.colorPreview {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.colorPicker {
+    position: absolute;
+    top: 120%;
+    left: 0;
+    z-index: 1000;
+}
+
+.orientations, .sizes {
+    display: flex;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #e9e9e9;
+    font-size: 16px;
+    font-weight: 500;
+    width: max-content;
+}
+
+.orientation, .size {
+    padding: 8px;
+    border-radius: 8px;
+    min-width: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.orientation.selected, .size.selected  {
+    background-color: white;
 }

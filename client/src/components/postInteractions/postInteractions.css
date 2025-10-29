@@ -11,6 +11,11 @@
     gap: 8px;
 }
 
+.interactionIcons img,
+.interactionIcons svg {
+    cursor: pointer;
+}
+
 .postInteractions button {
     background-color: #e50829;
     color: white;

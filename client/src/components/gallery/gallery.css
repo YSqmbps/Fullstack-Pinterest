@@ -39,3 +39,26 @@
         grid-template-columns: repeat(1, 1fr);
     }
 }
+
+/* 新增样式：使加载提示和没有更多图片提示居中显示 */
+.infinite-scroll-component {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.infinite-scroll-component__outerdiv {
+    width: 100%;
+}
+
+/* 确保加载和结束消息居中显示 */
+.infinite-scroll-component h4,
+.infinite-scroll-component h3 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0;
+    color: #666;
+}

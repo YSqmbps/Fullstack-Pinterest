@@ -15,6 +15,7 @@
     "emoji-picker-react": "^4.14.2",
     "imagekitio-react": "^4.3.0",
     "react": "^19.0.0",
+    "react-color": "^2.19.3",
     "react-dom": "^19.0.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-router": "^7.9.4",

@@ -2,12 +2,14 @@ import "./createPage.css";
 import IKImage from "../../components/image/image";
 import useAuthStore from "../../utils/authStore";
 import { useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Editor from "../../components/editor/editor";
-
+import  useEditorStore from "../../utils/editorStore";
+import apiRequest from "../../utils/apiRequest";
 const CreatePage = () => {
   const { currentUser } = useAuthStore();
   const navigate = useNavigate();
+  const formRef = useRef(null);
 
   const [file, setFile] = useState(null);
   const [previewImg, setPreviewImg] = useState({
@@ -37,13 +39,35 @@ const CreatePage = () => {
     }
   },[file])
 
+  const {textOptions,canvasOptions} = useEditorStore();
 
+  const handleSubmit = async () => {
+    if(isEditing) {
+      setIsEditing(false)
+    } else {
+      const formData = new FormData(formRef.current);
+      formData.append("media", file);
+      formData.append("textOptions", JSON.stringify(textOptions));
+      formData.append("canvasOptions", JSON.stringify(canvasOptions));
+      try {
+        const res = await apiRequest.post("/pins", formData,{
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+        });
+        navigate(`/pin/${res.data._id}`);
+      } catch (error) {
+        console.log(error);
+      }
+      }
+
+  }
 
   return (
     <div className="createPage">
       <div className="createTop">
         <h1>{isEditing ? "编辑图片" : "创建图片"}</h1>
-        <button onClick={() => setIsEditing(!isEditing)}>
+        <button onClick={handleSubmit}>
           {isEditing ? "保存" : "发布"}
         </button>
       </div>
@@ -79,7 +103,7 @@ const CreatePage = () => {
             </>
           )}
 
-          <form className="createForm" action="">
+          <form className="createForm" action="" ref={formRef}>
             <div className="createFormItem">
               <label htmlFor="title">标题</label>
               <input
@@ -111,7 +135,7 @@ const CreatePage = () => {
             <div className="createFormItem">
               <label htmlFor="board">模板</label>
               <select name="board" id="board">
-                <option>选择一个模板</option>
+                <option value="">选择一个模板</option>
                 <option value="1">模板1</option>
                 <option value="2">模板2</option>
                 <option value="3">模板3</option>

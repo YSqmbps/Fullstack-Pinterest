@@ -42,12 +42,12 @@ const PostPage = () => {
             </svg>
             <div className='postContainer'>
                 <div className='postImg'>
-                    <Image src={data.media} alt="" w={736} />
+                    <Image path={data.media} alt="" w={736} />
                 </div>
                 <div className='postDetails'>
-                    <PostInteractions />
+                    <PostInteractions postId={id}/>
                     <Link to={`/${data.user.username}`} className='postUser'>
-                        <Image src={data.user.img || "/general/noAvatar.png"} alt=""/>
+                        <Image path={data.user.img || "/general/noAvatar.png"} alt=""/>
                         <span>{data.user.username}</span>
                     </Link>
                     <Comments id={data._id} />
