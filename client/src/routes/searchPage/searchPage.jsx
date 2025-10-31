@@ -10,8 +10,12 @@ const SearchPage = () => {
     const boardId = searchParams.get('boardId');
 
     return (
-        <Gallery search={search} boardId={boardId} />
-    )       
+ <div className="searchPage">
+      {!search && !boardId && (
+        <div className="searchHint">请输入搜索内容</div>
+      )}
+      <Gallery search={search} boardId={boardId} />
+    </div>    )       
 }
 
 export default SearchPage

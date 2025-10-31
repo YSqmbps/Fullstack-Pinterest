@@ -24,18 +24,16 @@ app.use("/pins",pinRouter);
 app.use("/comments", commentRoutes);
 app.use("/boards",boardRouter);
 
-app.listen(3000, () => {
-  connectDB();
-  console.log('Server is running on port 3000');
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(3000, () => {
+      console.log('Server is running on port 3000');
+    });
+  } catch (error) {
+    console.error('数据库连接失败:', error);
+    process.exit(1);
+  }
+};
 
-
-// 在调用评论API的地方，确保URL格式正确
-const fetchComments = async (postId) => {
-    try {
-        const res = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}/comments/${postId}`);
-        return res.data;
-    } catch (error) {
-        console.error('获取评论失败:', error);
-    }
-}
+startServer();

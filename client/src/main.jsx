@@ -18,7 +18,7 @@ const AuthPage = React.lazy(() => import("./routes/authPage/authPage.jsx"));
 const CreatePage = React.lazy(() =>import("./routes/createPage/createPage.jsx"));
 const SearchPage = React.lazy(() =>import("./routes/searchPage/searchPage.jsx"));
 const ProfilePage = React.lazy(() =>import("./routes/profilePage/profilePage.jsx"));
-const MainLoyout = React.lazy(() => import("./routes/layouts/mainLayout.jsx"));
+const MainLayout = React.lazy(() => import("./routes/layouts/mainLayout.jsx"));
 
 const queryClient = new QueryClient();
 
@@ -30,7 +30,7 @@ createRoot(document.getElementById("root")).render(
         {/* 添加 AuthProvider */}
         <BrowserRouter>
           <Routes>
-            <Route element={<MainLoyout />}>
+            <Route element={<MainLayout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/create" element={<CreatePage />} />
               <Route path="/pin/:id" element={<PostPage />} />

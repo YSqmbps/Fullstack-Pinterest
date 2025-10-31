@@ -48,52 +48,57 @@ const CreatePage = () => {
     }
   }, [file]);
 
-  const { textOptions, canvasOptions } = useEditorStore();
+  const { textOptions, canvasOptions, resetEditor } = useEditorStore();
+
+  // 选择新文件时重置状态
+  const handleFileChange = (e) => {
+    const newFile = e.target.files[0];
+    if (newFile) {
+      setFile(newFile);
+      resetEditor(); // 重置编辑状态
+    }
+  };
 
   // 修改 handleSubmit 函数，添加前端验证
   const handleSubmit = async () => {
     if (isEditing) {
       setIsEditing(false);
-      return;
-    }
+    } else {
+      // 获取表单中的title和description
+      const titleInput = formRef.current.elements.title;
+      const descriptionInput = formRef.current.elements.description;
 
-    // 前端验证逻辑
-    const titleInput = formRef.current?.title;
-    const descriptionInput = formRef.current?.description;
+      // 前端验证：检查必要字段
+      if (!titleInput.value.trim()) {
+        alert("请填写标题");
+        titleInput.focus();
+        return;
+      }
+      if (!descriptionInput.value.trim()) {
+        alert("请填写描述");
+        descriptionInput.focus();
+        return;
+      }
+      if (!file) {
+        alert("请选择图片文件");
+        return;
+      }
 
-    // 检查标题
-    if (!titleInput?.value.trim()) {
-      alert("请填写标题");
-      titleInput?.focus();
-      return;
-    }
-
-    // 检查描述
-    if (!descriptionInput?.value.trim()) {
-      alert("请填写描述");
-      descriptionInput?.focus();
-      return;
-    }
-
-    // 检查图片文件
-    if (!file) {
-      alert("请上传图片文件");
-      return;
-    }
-
-    // 验证通过，提交表单
-    const formData = new FormData(formRef.current);
-    formData.append("media", file);
-    formData.append("textOptions", JSON.stringify(textOptions));
-    formData.append("canvasOptions", JSON.stringify(canvasOptions));
-
-    try {
-      const res = await apiRequest.post("/pins", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      navigate(`/pin/${res.data._id}`);
-    } catch (error) {
-      console.log("发布失败：", error.response?.data?.message || error.message);
+      // 验证通过后提交
+      const formData = new FormData(formRef.current);
+      formData.append("media", file);
+      formData.append("textOptions", JSON.stringify(textOptions));
+      formData.append("canvasOptions", JSON.stringify(canvasOptions));
+      try {
+        const res = await apiRequest.post("/pins", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        navigate(`/pin/${res.data._id}`);
+      } catch (error) {
+        console.log(error);
+        // 显示后端返回的具体错误信息（如“缺少必要字段”）
+        alert(error.response?.data?.message || "发布失败，请重试");
+      }
     }
   };
   return (
@@ -122,15 +127,10 @@ const CreatePage = () => {
                   <span>选择一个文件或拖放到这里</span>
                 </div>
                 <div className="uploadInfo">
-                  我们建议少使用高质量的超过20 MB的jpg文件或大于200 MB的.mp4文件
+                  推荐上传：jpg/png/webp（≤20MB）、mp4（≤200MB），图片宽高建议≤3000像素{" "}
                 </div>
               </label>
-              <input
-                type="file"
-                id="file"
-                onChange={(e) => setFile(e.target.files[0])}
-                hidden
-              />
+              <input type="file" id="file" onChange={handleFileChange} hidden />
             </>
           )}
 
@@ -166,9 +166,9 @@ const CreatePage = () => {
               />
             </div>
             <div className="createFormItem">
-              <label htmlFor="board">模板</label>
+              <label htmlFor="board">模版</label>
               <select name="board" id="board">
-                <option value="">不选择看板（可选）</option>
+                <option value="">不选择模版（可选）</option>
                 {/* 移除所有硬编码选项 */}
               </select>
             </div>

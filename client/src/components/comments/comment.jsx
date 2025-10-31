@@ -1,5 +1,5 @@
 import "./comment.css";
-import Image from "../image/image.jsx";
+import Image from "../../components/image/image.jsx";
 import { format } from "timeago.js";
 import { useAuth } from "../../contexts/AuthContext.jsx";
 import { useState } from "react";
