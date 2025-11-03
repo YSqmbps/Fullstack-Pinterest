@@ -6,6 +6,10 @@ import ImageKit from "imagekit";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
+
+// 定义在函数外部，确保try/catch都能访问
+const MAX_UPLOAD_SIZE = 4000; // 本地压缩上限
+
 export const getPins = async (req, res) => {
   const pageNumber = Number(req.query.cursor) || 0;
   const search = req.query.search;
@@ -50,142 +54,92 @@ export const getPin = async (req, res) => {
 
 export const createPin = async (req, res) => {
   try {
-    const { title, description, link, tags, board, textOptions, canvasOptions } = req.body;
+    const { 
+      title, 
+      description, 
+      link, 
+      tags, 
+      board,
+      // 接收前端编辑的宽高参数（可选，没有则用原图尺寸）
+      editWidth, 
+      editHeight 
+    } = req.body;
     const media = req.files?.media;
 
-    // 基础参数验证
+    // 基础验证
     if (!title?.trim()) return res.status(400).json({ message: "请填写标题" });
     if (!description?.trim()) return res.status(400).json({ message: "请填写描述" });
     if (!media) return res.status(400).json({ message: "请选择图片文件" });
-    if (board && !mongoose.Types.ObjectId.isValid(board)) {
-      return res.status(400).json({ message: "无效的画板ID" });
-    }
 
-    // 解析文本和画布选项（添加默认值）
-    const parseTextOptions = textOptions ? JSON.parse(textOptions) : {
-      text: "",
-      fontSize: 16,
-      color: "#000000",
-      top: 0,
-      left: 0,
-    };
-    const parseCanvasOptions = canvasOptions ? JSON.parse(canvasOptions) : {
-      size: "original",
-      backgroundColor: "#ffffff", // 默认白色背景
-      height: 600,
-      orientation: "portrait"
-    };
-
-    // 确保必要属性存在
-    parseCanvasOptions.size = parseCanvasOptions.size || "original";
-    parseCanvasOptions.backgroundColor = parseCanvasOptions.backgroundColor || "#ffffff";
-    parseTextOptions.text = parseTextOptions.text || "";
-    parseTextOptions.fontSize = parseTextOptions.fontSize || 16;
-    parseTextOptions.color = parseTextOptions.color || "#000000";
-
-    // 获取原始图片 metadata
+    // 1. 获取原始图片信息
     const metadata = await sharp(media.data).metadata();
     if (!metadata.width || !metadata.height) {
       return res.status(400).json({ message: "无法解析图片尺寸" });
     }
+    const originalWidth = metadata.width;
+    const originalHeight = metadata.height;
 
-    // 计算原始方向和比例
-    const originalOrientation = metadata.width < metadata.height ? "portrait" : "landscape";
-    const originalAspectRatio = metadata.width / metadata.height;
-    let clientAspectRatio = originalAspectRatio;
+    // 2. 处理编辑尺寸（优先用前端传递的参数，否则用原图尺寸）
+    // 解析前端传递的宽高（确保是数字且有效）
+    let targetWidth = editWidth ? parseInt(editWidth, 10) : originalWidth;
+    let targetHeight = editHeight ? parseInt(editHeight, 10) : originalHeight;
 
-    // 安全处理尺寸比例计算
-    if (parseCanvasOptions.size !== "original" && parseCanvasOptions.size?.includes(':')) {
-      const [widthRatio, heightRatio] = parseCanvasOptions.size.split(":");
-      if (!isNaN(widthRatio) && !isNaN(heightRatio) && Number(heightRatio) !== 0) {
-        clientAspectRatio = Number(widthRatio) / Number(heightRatio);
-      }
+    // 验证尺寸有效性（防止非数字、负数、0）
+    if (isNaN(targetWidth) || isNaN(targetHeight) || targetWidth <= 0 || targetHeight <= 0) {
+      return res.status(400).json({ message: "无效的尺寸参数，请输入正整数" });
     }
 
-    // 计算宽高并限制最大值（避免ImageKit处理失败）
-    const MAX_WIDTH = 3000; // 安全最大宽度（根据ImageKit能力调整）
-    let width = metadata.width;
-    let height = width / clientAspectRatio;
+    // 3. 本地处理图片（按目标尺寸缩放/裁剪，不依赖ImageKit转换）
+    // 使用sharp直接将图片处理成目标尺寸
+    const processedBuffer = await sharp(media.data)
+      .resize(targetWidth, targetHeight, {
+        fit: "cover", // 按比例缩放并裁剪，确保填满目标尺寸（可选："inside" 不裁剪只缩放）
+        withoutEnlargement: false, // 允许放大（如果编辑时需要放大）
+        background: { r: 255, g: 255, b: 255, alpha: 1 } // 透明图片补白
+      })
+      .jpeg({ quality: 85 }) // 保持图片质量
+      .toBuffer();
 
-    // 限制最大宽度，按比例缩放
-    if (width > MAX_WIDTH) {
-      height = (height / width) * MAX_WIDTH;
-      width = MAX_WIDTH;
-    }
-
-    // 确保尺寸为整数
-    width = Math.round(width);
-    height = Math.round(height);
-
-    // 计算文本位置（避免越界）
-    const textLeftPosition = Math.min(
-      Math.round((parseTextOptions.left / 375) * width), // 375对应前端画布宽度
-      width - 100 // 防止文本超出右侧
-    );
-    const textTopPosition = Math.min(
-      Math.round((parseTextOptions.top / parseCanvasOptions.height) * height),
-      height - 50 // 防止文本超出底部
-    );
-
-    // 构建正确的ImageKit转换参数（无多余逗号，参数格式正确）
-    const resizeParam = originalAspectRatio > clientAspectRatio ? "pad_resize" : "";
-    const bgColor = parseCanvasOptions.backgroundColor.substring(1); // 移除#号
-    const textParam = parseTextOptions.text.trim() 
-      ? `l-text,i-${encodeURIComponent(parseTextOptions.text)},fs-${Math.round(parseTextOptions.fontSize * 2.1)},lx-${textLeftPosition},ly-${textTopPosition},co-${parseTextOptions.color.substring(1)},l-end`
-      : "";
-
-    // 拼接参数（处理空值，避免多余逗号）
-    const params = [
-      `w-${width}`,
-      `h-${height}`,
-      resizeParam,
-      `bg-${bgColor}`,
-      textParam
-    ].filter(Boolean); // 过滤空字符串
-
-    const transformationString = params.join(",");
-
-    // 初始化ImageKit
+    // 4. 上传处理后的图片到ImageKit（不设置transformation参数）
     const imagekit = new ImageKit({
       publicKey: process.env.IK_PUBLIC_KEY,
       privateKey: process.env.IK_PRIVATE_KEY,
       urlEndpoint: process.env.IK_URL_ENDPOINT,
     });
 
-    // 上传图片
     const uploadResponse = await imagekit.upload({
-      file: media.data,
-      fileName: `${Date.now()}-${media.name.replace(/\s+/g, "-")}`, // 处理文件名空格
+      file: processedBuffer, // 上传本地处理后的图片
+      fileName: `${Date.now()}-${media.name.replace(/\s+/g, "-")}`,
       folder: "pins",
-      transformation: { pre: transformationString }
+      // 完全移除transformation参数，避免格式问题
+      timeout: 120000, // 延长超时（大图片处理需要时间）
     });
 
-    // 创建Pin记录
+    // 5. 存储编辑后的尺寸（确保前端显示时用处理后的尺寸）
     const newPin = await Pin.create({
       user: req.userId,
       title,
       description,
       link: link || null,
-      tags: tags ? tags.split(",").map(tag => tag.trim()).filter(Boolean) : [],
+      tags: tags ? tags.split(",").map(t => t.trim()).filter(Boolean) : [],
       board: board || null,
       media: uploadResponse.filePath,
-      width: uploadResponse.width,
-      height: uploadResponse.height,
+      width: targetWidth, // 存储编辑后的宽（不是原始宽）
+      height: targetHeight, // 存储编辑后的高（不是原始高）
     });
 
     res.status(201).json(newPin);
 
   } catch (error) {
-    console.error("创建Pin失败:", error);
-    // 针对ImageKit转换错误的详细提示
-    if (error.message.includes("processing pre-transformation")) {
-      return res.status(400).json({
-        message: "图片处理失败，请检查尺寸或格式",
-        transformation: error.transformation?.pre || "参数错误",
-        details: "可能是尺寸过大或文本参数格式错误"
-      });
+    console.error("上传失败:", error);
+    // 针对性错误提示
+    if (error.message.includes("sharp")) {
+      return res.status(400).json({ message: "图片处理失败，请检查尺寸是否合理" });
     }
-    res.status(500).json({ message: error.message });
+    if (error.code === "ECONNRESET") {
+      return res.status(504).json({ message: "网络超时，换张小点的图试试" });
+    }
+    res.status(500).json({ message: "服务器错误，请稍后再试" });
   }
 };
 
